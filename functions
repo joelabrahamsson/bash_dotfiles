@@ -1,0 +1,50 @@
+function cd() {
+   new_directory="$*";
+   if [ $# -eq 0 ]; then
+       new_directory=${HOME};
+   fi;
+   builtin cd "${new_directory}" && [[ -s .nvmrc ]] && nvm use
+}
+
+# === Git ===
+
+# Commit pending changes and quote all args as message
+function gam() { 
+    git commit -v -a -m "$*"
+}
+
+function gm() { 
+    git commit -v -m "$*"
+}
+
+# get the name of the branch we are on
+function parse_git_branch() {
+  git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
+function git_status() {
+  if current_git_status=$(git status 2> /dev/null | grep 'added to commit' 2> /dev/null); then
+    echo "*"
+  fi
+}
+
+function loc() {
+  find . -name "*$1*"
+}
+
+# Disable the git prompt method when git does not exist in path;
+# this is neccessary on computers without git if you want it to
+# have a usable prompt anyway
+if [ $(command_exists git) == 0 ]; then
+  function get_git_prompt_info() {
+    echo ""
+  }
+  function git_status() { 
+    echo ""
+  }
+fi
+
+# commits svn files matching criteria with message
+function svn_commit_it() {
+  svn ci -m $2  $(svn st | grep $1 | cut -d" " -f7 - | xargs)
+}
