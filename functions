@@ -31,20 +31,3 @@ function git_status() {
 function loc() {
   find . -name "*$1*"
 }
-
-# Disable the git prompt method when git does not exist in path;
-# this is neccessary on computers without git if you want it to
-# have a usable prompt anyway
-if [ $(command_exists git) == 0 ]; then
-  function get_git_prompt_info() {
-    echo ""
-  }
-  function git_status() { 
-    echo ""
-  }
-fi
-
-# commits svn files matching criteria with message
-function svn_commit_it() {
-  svn ci -m $2  $(svn st | grep $1 | cut -d" " -f7 - | xargs)
-}
